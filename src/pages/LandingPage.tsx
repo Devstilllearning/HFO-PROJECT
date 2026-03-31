@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Button } from '../components/ui/button';
 import { BookOpen, Users, Calendar, Award, ArrowRight, CheckCircle2, Mail, Phone, MapPin } from 'lucide-react';
-import { SCHOOL_LOGO_URL, YPKB_LOGO_URL, SCHOOL_NAME, SCHOOL_FULL_NAME } from '../constants';
+import { SCHOOL_LOGO_URL, YPKB_LOGO_URL, SCHOOL_NAME, SCHOOL_FULL_NAME, CONTACT_INFO } from '../constants';
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -31,31 +31,61 @@ export const LandingPage = () => {
         <div className="absolute -bottom-32 left-1/2 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse" style={{ animationDelay: '4s' }}></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div 
-            className="text-center max-w-3xl mx-auto"
-            initial="initial"
-            animate="animate"
-            variants={staggerContainer}
-          >
-            <motion.h1 variants={fadeIn} className="text-5xl font-extrabold text-gray-900 tracking-tight sm:text-6xl mb-6">
-              Your High School Journey, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">Elevated.</span>
-            </motion.h1>
-            <motion.p variants={fadeIn} className="text-xl text-gray-800 mb-10 leading-relaxed font-medium">
-              The official digital learning platform for {SCHOOL_FULL_NAME}. Connect with teachers, collaborate with classmates, and excel in your studies.
-            </motion.p>
-            <motion.div variants={fadeIn} className="flex justify-center gap-4">
-              <Link to="/login">
-                <Button size="lg" className="h-14 px-8 text-lg rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all hover:-translate-y-1">
-                  Access Portal <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <a href="#features">
-                <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-full hover:bg-purple-50 bg-white/80 backdrop-blur-sm">
-                  Learn More
-                </Button>
-              </a>
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            <motion.div 
+              className="text-left max-w-2xl flex-1"
+              initial="initial"
+              animate="animate"
+              variants={staggerContainer}
+            >
+              <motion.h1 variants={fadeIn} className="text-5xl font-extrabold text-gray-900 tracking-tight sm:text-7xl mb-6 leading-[1.1]">
+                Your High School Journey, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">Elevated.</span>
+              </motion.h1>
+              <motion.p variants={fadeIn} className="text-xl text-gray-800 mb-10 leading-relaxed font-medium">
+                The official digital learning platform for {SCHOOL_FULL_NAME}. Connect with teachers, collaborate with classmates, and excel in your studies.
+              </motion.p>
+              <motion.div variants={fadeIn} className="flex flex-wrap gap-4">
+                <Link to="/login">
+                  <Button size="lg" className="h-14 px-8 text-lg rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all hover:-translate-y-1">
+                    Access Portal <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <a href="#features">
+                  <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-full hover:bg-purple-50 bg-white/80 backdrop-blur-sm">
+                    Learn More
+                  </Button>
+                </a>
+              </motion.div>
             </motion.div>
-          </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, x: 20 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="flex-1 relative hidden lg:block"
+            >
+              <div className="absolute -inset-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-[2rem] blur-2xl opacity-20 animate-pulse"></div>
+              <div className="relative bg-white p-2 rounded-[2rem] shadow-2xl border border-white/50 backdrop-blur-sm overflow-hidden">
+                <img 
+                  src="https://picsum.photos/seed/hfo-shs/800/1000" 
+                  alt="Students Learning" 
+                  className="rounded-[1.5rem] w-full h-[600px] object-cover" 
+                  referrerPolicy="no-referrer" 
+                />
+                <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-md p-4 rounded-2xl border border-white/50 shadow-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-purple-600 p-2 rounded-lg text-white">
+                      <Award className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-gray-900">Excellence in Education</p>
+                      <p className="text-xs text-gray-500">Official Platform of {SCHOOL_NAME}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
@@ -155,23 +185,23 @@ export const LandingPage = () => {
             <div className="bg-purple-50 p-8 md:p-12 rounded-3xl shadow-sm border border-purple-100">
               <p className="text-lg text-gray-700 mb-8">Have questions? We're here to help you get started.</p>
               <div className="space-y-6 text-left max-w-sm mx-auto">
-                <a href="mailto:info@hfo-school.edu" className="flex items-center gap-4 hover:bg-purple-100 p-2 rounded-lg transition-colors">
+                <a href={`mailto:${CONTACT_INFO.email}`} className="flex items-center gap-4 hover:bg-purple-100 p-2 rounded-lg transition-colors">
                   <div className="bg-white p-3 rounded-full shadow-sm text-purple-600">
                     <Mail className="h-6 w-6" />
                   </div>
-                  <span className="text-gray-800 font-medium">info@hfo-school.edu</span>
+                  <span className="text-gray-800 font-medium">{CONTACT_INFO.email}</span>
                 </a>
-                <a href="tel:+15551234567" className="flex items-center gap-4 hover:bg-purple-100 p-2 rounded-lg transition-colors">
+                <a href={`tel:${CONTACT_INFO.phone.replace(/\s/g, '')}`} className="flex items-center gap-4 hover:bg-purple-100 p-2 rounded-lg transition-colors">
                   <div className="bg-white p-3 rounded-full shadow-sm text-purple-600">
                     <Phone className="h-6 w-6" />
                   </div>
-                  <span className="text-gray-800 font-medium">+1 (555) 123-4567</span>
+                  <span className="text-gray-800 font-medium">{CONTACT_INFO.phone}</span>
                 </a>
-                <a href="https://maps.google.com/?q=123+Education+Ave,+Depok" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 hover:bg-purple-100 p-2 rounded-lg transition-colors">
+                <a href={CONTACT_INFO.mapsUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 hover:bg-purple-100 p-2 rounded-lg transition-colors">
                   <div className="bg-white p-3 rounded-full shadow-sm text-purple-600">
                     <MapPin className="h-6 w-6" />
                   </div>
-                  <span className="text-gray-800 font-medium">123 Education Ave, Depok</span>
+                  <span className="text-gray-800 font-medium">{CONTACT_INFO.address}</span>
                 </a>
               </div>
             </div>

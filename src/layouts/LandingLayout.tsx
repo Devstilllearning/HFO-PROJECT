@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { BookOpen } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { SCHOOL_LOGO_URL, SCHOOL_NAME, SCHOOL_FULL_NAME } from '../constants';
+import { SCHOOL_LOGO_URL, SCHOOL_NAME, SCHOOL_FULL_NAME, CONTACT_INFO } from '../constants';
 
 export const LandingLayout = () => {
   return (
@@ -53,9 +53,9 @@ export const LandingLayout = () => {
           <div>
             <h4 className="font-semibold mb-4">Contact</h4>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><a href="mailto:info@hfo-school.edu" className="hover:text-white">info@hfo-school.edu</a></li>
-              <li><a href="tel:+15551234567" className="hover:text-white">+1 (555) 123-4567</a></li>
-              <li><a href="https://maps.google.com/?q=123+Education+Ave,+Depok" target="_blank" rel="noopener noreferrer" className="hover:text-white">123 Education Ave, Depok</a></li>
+              <li><a href={`mailto:${CONTACT_INFO.email}`} className="hover:text-white">{CONTACT_INFO.email}</a></li>
+              <li><a href={`tel:${CONTACT_INFO.phone.replace(/\s/g, '')}`} className="hover:text-white">{CONTACT_INFO.phone}</a></li>
+              <li><a href={CONTACT_INFO.mapsUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white">{CONTACT_INFO.address}</a></li>
             </ul>
           </div>
         </div>

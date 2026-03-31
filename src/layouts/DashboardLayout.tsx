@@ -32,7 +32,7 @@ export const DashboardLayout = () => {
       {/* Mobile Header */}
       <div className="md:hidden bg-white border-b p-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <img src={SCHOOL_LOGO_URL} alt={`${SCHOOL_NAME} Logo`} className="h-8 w-auto object-contain" referrerPolicy="no-referrer" />
+          <img src={SCHOOL_LOGO_URL} alt={`${SCHOOL_NAME} Logo`} className="h-10 w-auto object-contain" referrerPolicy="no-referrer" />
           <span className="font-bold text-gray-900">{SCHOOL_NAME} Portal</span>
         </div>
         <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
@@ -47,7 +47,7 @@ export const DashboardLayout = () => {
       `}>
         <div className="h-full flex flex-col">
           <div className="h-16 hidden md:flex items-center gap-3 px-6 border-b">
-            <img src={SCHOOL_LOGO_URL} alt={`${SCHOOL_NAME} Logo`} className="h-8 w-auto object-contain" referrerPolicy="no-referrer" />
+            <img src={SCHOOL_LOGO_URL} alt={`${SCHOOL_NAME} Logo`} className="h-10 w-auto object-contain" referrerPolicy="no-referrer" />
             <span className="text-xl font-bold text-gray-900">{SCHOOL_NAME} Portal</span>
           </div>
 
@@ -77,16 +77,18 @@ export const DashboardLayout = () => {
 
           <div className="p-4 border-t">
             <div className="flex items-center gap-3 mb-4">
-              {profile?.avatarUrl ? (
-                <img src={profile.avatarUrl} alt={profile.name} className="h-10 w-10 rounded-full object-cover border" />
-              ) : (
-                <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold border border-purple-200">
-                  {profile?.name?.charAt(0) || 'U'}
-                </div>
-              )}
+              <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-purple-100 shadow-sm shrink-0">
+                {profile?.avatarUrl ? (
+                  <img src={profile.avatarUrl} alt={profile.name} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+                ) : (
+                  <div className="h-full w-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold">
+                    {profile?.name?.charAt(0) || 'U'}
+                  </div>
+                )}
+              </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{profile?.name}</p>
-                <p className="text-xs text-gray-500 truncate capitalize">{profile?.role}</p>
+                <p className="text-sm font-bold text-gray-900 truncate">{profile?.name}</p>
+                <p className="text-xs text-gray-500 truncate capitalize font-medium">{profile?.role}</p>
               </div>
             </div>
             <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50" onClick={handleSignOut}>

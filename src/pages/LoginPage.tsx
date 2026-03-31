@@ -5,6 +5,8 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { BookOpen, AlertCircle } from 'lucide-react';
 
+import { SCHOOL_NAME } from '../constants';
+
 export const LoginPage = () => {
   const { signInWithGoogle } = useAuth();
   const navigate = useNavigate();
@@ -40,7 +42,7 @@ export const LoginPage = () => {
           </div>
           <CardTitle className="text-3xl font-bold tracking-tight text-gray-900">Welcome back</CardTitle>
           <CardDescription className="text-base text-gray-500">
-            Sign in to your HFO account
+            Sign in to your {SCHOOL_NAME} account
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

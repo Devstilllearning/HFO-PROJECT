@@ -11,6 +11,8 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { motion } from 'motion/react';
 
+import { SCHOOL_NAME } from '../constants';
+
 export const Dashboard = () => {
   const { profile } = useAuth();
   const [classes, setClasses] = useState<any[]>([]);
@@ -178,7 +180,7 @@ export const Dashboard = () => {
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full translate-y-1/2 -translate-x-1/4 blur-2xl"></div>
         <div className="relative z-10">
           <h2 className="text-3xl font-bold mb-2">Welcome back, {profile?.name}!</h2>
-          <p className="text-purple-100 text-lg">Ready for another great day at Holy Faithful Obedient Senior High?</p>
+          <p className="text-purple-100 text-lg">Ready for another great day at {SCHOOL_NAME}?</p>
         </div>
         {profile?.role === 'teacher' && (
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>

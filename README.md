@@ -1,20 +1,60 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# HFO SHS Platform Maintenance Guide
 
-# Run and deploy your AI Studio app
+This document provides instructions for maintaining and updating the Holy Faithful Obedient (HFO) Senior High School digital platform.
 
-This contains everything you need to run your app locally.
+## 1. Branding Updates
 
-View your app in AI Studio: https://ai.studio/apps/aa85d96e-2a49-489d-8366-534ae12165f4
+All branding elements are centralized in `src/constants.ts`. To update the school's identity, modify this file:
 
-## Run Locally
+- **School Logo**: Update `SCHOOL_LOGO_URL` with a new image URL.
+- **Foundation Logo**: Update `YPKB_LOGO_URL` for the YPKB foundation logo.
+- **School Name**: Update `SCHOOL_NAME` (short version) and `SCHOOL_FULL_NAME` (long version).
+- **Contact Info**: Update the `CONTACT_INFO` object to change email, phone, address, or Google Maps link.
 
-**Prerequisites:**  Node.js
+```typescript
+// src/constants.ts
+export const SCHOOL_LOGO_URL = "https://example.com/new-logo.png";
+export const SCHOOL_NAME = "HFO SHS";
+// ...
+```
 
+## 2. Content Management
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### Announcements
+Teachers can post announcements directly from the **Classroom** stream. These are stored in the `announcements` collection in Firestore.
+
+### Assignments
+Currently, assignments are managed within the `Classroom.tsx` component state. For long-term use, these should be moved to a Firestore collection named `assignments`.
+
+### Calendar Events
+The calendar in `src/pages/Calendar.tsx` uses mock data. To make it dynamic:
+1. Create an `events` collection in Firestore.
+2. Update `Calendar.tsx` to fetch data from this collection using `onSnapshot`.
+
+## 3. User Management
+
+Administrators can view all registered users at `/dashboard/users`. 
+- **Roles**: Users are assigned roles (`student`, `teacher`, `admin`) upon their first Google Sign-in.
+- **Profile Updates**: Users can update their name and avatar URL in the **Settings** page.
+
+## 4. Technical Stack
+
+- **Frontend**: React 18 with Vite
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion (`motion/react`)
+- **Backend**: Firebase (Firestore & Authentication)
+- **Icons**: Lucide React
+
+## 5. Deployment
+
+The app is configured for deployment on Cloud Run.
+- **Build**: `npm run build`
+- **Start**: `npm start` (for full-stack) or automatic static serving.
+
+## 6. Security Rules
+
+Firestore security rules are defined in `firestore.rules`. Always test rules after making changes to ensure data remains protected.
+- **Default Admin**: The user `nataliariyadi37@gmail.com` is configured as the default administrator in `firestore.rules`.
+
+---
+*Developed for Holy Faithful Obedient Senior High School*
