@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Button } from '../components/ui/button';
-import { BookOpen, Users, Calendar, Award, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Users, Calendar, Award, ArrowRight, CheckCircle2, Mail, Phone, MapPin } from 'lucide-react';
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -140,7 +140,6 @@ export const LandingPage = () => {
                   </div>
                   <div>
                     <p className="text-white font-semibold">Sarah Johnson</p>
-                    <p className="text-purple-200 text-sm">Mathematics Teacher</p>
                   </div>
                 </div>
               </div>
@@ -165,6 +164,65 @@ export const LandingPage = () => {
                     </motion.li>
                   ))}
                 </ul>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">About HFO SHS & YPKB</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12">
+              Holy Faithful Obedient Senior High School is proudly supported by Yayasan Pokok Kegirangan Bangsa (YPKB), dedicated to providing excellent education and character building.
+            </p>
+            <div className="flex flex-col md:flex-row justify-center items-center gap-12">
+              <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjYvYmFkZ2UuanBn" alt="HFO SHS Logo" className="h-48 w-auto object-contain drop-shadow-xl" referrerPolicy="no-referrer" />
+              <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjcvZG93bmxvYWQuanBn" alt="YPKB Logo" className="h-48 w-auto object-contain drop-shadow-xl" referrerPolicy="no-referrer" />
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-24 bg-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl font-bold text-gray-900 mb-8">Contact Us</h2>
+            <div className="bg-purple-50 p-8 md:p-12 rounded-3xl shadow-sm border border-purple-100">
+              <p className="text-lg text-gray-700 mb-8">Have questions? We're here to help you get started.</p>
+              <div className="space-y-6 text-left max-w-sm mx-auto">
+                <a href="mailto:info@hfo-school.edu" className="flex items-center gap-4 hover:bg-purple-100 p-2 rounded-lg transition-colors">
+                  <div className="bg-white p-3 rounded-full shadow-sm text-purple-600">
+                    <Mail className="h-6 w-6" />
+                  </div>
+                  <span className="text-gray-800 font-medium">info@hfo-school.edu</span>
+                </a>
+                <a href="tel:+15551234567" className="flex items-center gap-4 hover:bg-purple-100 p-2 rounded-lg transition-colors">
+                  <div className="bg-white p-3 rounded-full shadow-sm text-purple-600">
+                    <Phone className="h-6 w-6" />
+                  </div>
+                  <span className="text-gray-800 font-medium">+1 (555) 123-4567</span>
+                </a>
+                <a href="https://maps.google.com/?q=123+Education+Ave,+Depok" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 hover:bg-purple-100 p-2 rounded-lg transition-colors">
+                  <div className="bg-white p-3 rounded-full shadow-sm text-purple-600">
+                    <MapPin className="h-6 w-6" />
+                  </div>
+                  <span className="text-gray-800 font-medium">123 Education Ave, Depok</span>
+                </a>
               </div>
             </div>
           </motion.div>

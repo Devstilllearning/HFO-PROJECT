@@ -9,10 +9,7 @@ export const LandingLayout = () => {
       <header className="bg-white border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
-            <div className="bg-purple-600 p-2 rounded-lg flex items-center justify-center">
-              {/* Fallback icon if user hasn't uploaded the logo yet */}
-              <BookOpen className="h-6 w-6 text-white" />
-            </div>
+            <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjYvYmFkZ2UuanBn" alt="HFO SHS Logo" className="h-10 w-auto object-contain" referrerPolicy="no-referrer" />
             <span className="text-xl font-bold text-gray-900">SHS</span>
           </Link>
           <nav className="hidden md:flex gap-6">
@@ -37,9 +34,7 @@ export const LandingLayout = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <div className="bg-purple-600 p-1.5 rounded-lg flex items-center justify-center">
-                <BookOpen className="h-5 w-5 text-white" />
-              </div>
+              <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjYvYmFkZ2UuanBn" alt="HFO SHS Logo" className="h-8 w-auto object-contain" referrerPolicy="no-referrer" />
               <span className="text-lg font-bold">SHS</span>
             </div>
             <p className="text-gray-400 text-sm max-w-xs">
@@ -57,9 +52,9 @@ export const LandingLayout = () => {
           <div>
             <h4 className="font-semibold mb-4">Contact</h4>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li>info@hfo-school.edu</li>
-              <li>+1 (555) 123-4567</li>
-              <li>123 Education Ave, Depok</li>
+              <li><a href="mailto:info@hfo-school.edu" className="hover:text-white">info@hfo-school.edu</a></li>
+              <li><a href="tel:+15551234567" className="hover:text-white">+1 (555) 123-4567</a></li>
+              <li><a href="https://maps.google.com/?q=123+Education+Ave,+Depok" target="_blank" rel="noopener noreferrer" className="hover:text-white">123 Education Ave, Depok</a></li>
             </ul>
           </div>
         </div>

@@ -9,6 +9,7 @@ export const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = React.useState(false);
 
   const handleSignOut = async () => {
     await signOut();
@@ -30,9 +31,7 @@ export const DashboardLayout = () => {
       {/* Mobile Header */}
       <div className="md:hidden bg-white border-b p-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <div className="bg-purple-600 p-1.5 rounded-lg flex items-center justify-center">
-            <BookOpen className="h-5 w-5 text-white" />
-          </div>
+          <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjYvYmFkZ2UuanBn" alt="HFO SHS Logo" className="h-8 w-auto object-contain" referrerPolicy="no-referrer" />
           <span className="font-bold text-gray-900">SHS Portal</span>
         </div>
         <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
@@ -47,9 +46,7 @@ export const DashboardLayout = () => {
       `}>
         <div className="h-full flex flex-col">
           <div className="h-16 hidden md:flex items-center gap-3 px-6 border-b">
-            <div className="bg-purple-600 p-2 rounded-lg flex items-center justify-center">
-              <BookOpen className="h-6 w-6 text-white" />
-            </div>
+            <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjYvYmFkZ2UuanBn" alt="HFO SHS Logo" className="h-8 w-auto object-contain" referrerPolicy="no-referrer" />
             <span className="text-xl font-bold text-gray-900">SHS Portal</span>
           </div>
 
@@ -105,14 +102,55 @@ export const DashboardLayout = () => {
           <h1 className="text-lg font-semibold text-gray-900 capitalize">
             {location.pathname.split('/').pop() || 'Dashboard'}
           </h1>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="relative" onClick={() => alert('No new notifications')}>
+          <div className="flex items-center gap-4 relative">
+            <Button variant="ghost" size="icon" className="relative" onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}>
               <Bell className="h-5 w-5 text-gray-500" />
               <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => alert('Settings coming soon')}>
-              <Settings className="h-5 w-5 text-gray-500" />
-            </Button>
+            
+            {isNotificationsOpen && (
+              <div className="absolute top-12 right-12 w-80 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
+                <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                  <h3 className="font-semibold text-gray-900">Notifications</h3>
+                  <button className="text-xs text-purple-600 hover:text-purple-700 font-medium">Mark all as read</button>
+                </div>
+                <div className="max-h-96 overflow-y-auto">
+                  <div className="p-4 border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer">
+                    <div className="flex items-start gap-3">
+                      <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 flex-shrink-0">
+                        <BookOpen className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-900 font-medium">New Assignment Posted</p>
+                        <p className="text-xs text-gray-500 mt-0.5">Mr. Smith posted "Chapter 4 Review" in Mathematics.</p>
+                        <p className="text-xs text-purple-600 mt-1 font-medium">2 hours ago</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 hover:bg-gray-50 transition-colors cursor-pointer">
+                    <div className="flex items-start gap-3">
+                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+                        <Calendar className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-900 font-medium">Upcoming Event</p>
+                        <p className="text-xs text-gray-500 mt-0.5">School Assembly tomorrow at 8:00 AM.</p>
+                        <p className="text-xs text-purple-600 mt-1 font-medium">1 day ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-3 border-t border-gray-100 text-center bg-gray-50">
+                  <button className="text-sm text-gray-600 hover:text-gray-900 font-medium">View all notifications</button>
+                </div>
+              </div>
+            )}
+
+            <Link to="/dashboard/settings">
+              <Button variant="ghost" size="icon">
+                <Settings className="h-5 w-5 text-gray-500" />
+              </Button>
+            </Link>
           </div>
         </header>
         <div className="flex-1 overflow-y-auto p-4 md:p-8">

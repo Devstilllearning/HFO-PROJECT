@@ -16,7 +16,14 @@ export const Classroom = () => {
   const [loading, setLoading] = useState(true);
   
   // Announcements State
-  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [assignments, setAssignments] = useState<any[]>([]);
+
+  const handleCreateAssignment = () => {
+    const title = prompt("Enter assignment title:");
+    if (title) {
+      setAssignments([{ id: Date.now(), title, date: new Date().toLocaleDateString() }, ...assignments]);
+    }
+  };
   const [newAnnouncement, setNewAnnouncement] = useState('');
   const [isPosting, setIsPosting] = useState(false);
   const [showPostBox, setShowPostBox] = useState(false);
@@ -264,10 +271,7 @@ export const Classroom = () => {
               {isTeacher && (
                 <div className="flex justify-between items-center mb-6">
                   <Button 
-                    onClick={() => {
-                      const title = prompt("Enter assignment title:");
-                      if (title) alert("Assignment created! (Demo mode)");
-                    }}
+                    onClick={handleCreateAssignment}
                     className="rounded-full shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
                   >
                     <Plus className="h-5 w-5 mr-2" />
@@ -276,17 +280,42 @@ export const Classroom = () => {
                 </div>
               )}
               
-              <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
-                <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FileText className="h-8 w-8 text-gray-400" />
+              {assignments.length === 0 ? (
+                <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
+                  <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FileText className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <h4 className="text-lg font-medium text-gray-900 mb-2">No classwork yet</h4>
+                  <p className="text-gray-500 max-w-sm mx-auto">
+                    {isTeacher 
+                      ? "Create assignments, questions, and materials for your students." 
+                      : "Your teacher hasn't assigned any classwork yet."}
+                  </p>
                 </div>
-                <h4 className="text-lg font-medium text-gray-900 mb-2">No classwork yet</h4>
-                <p className="text-gray-500 max-w-sm mx-auto">
-                  {isTeacher 
-                    ? "Create assignments, questions, and materials for your students." 
-                    : "Your teacher hasn't assigned any classwork yet."}
-                </p>
-              </div>
+              ) : (
+                <div className="space-y-4">
+                  {assignments.map((assignment, index) => (
+                    <motion.div 
+                      key={assignment.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                        <CardContent className="p-6 flex items-center gap-4">
+                          <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 shrink-0">
+                            <FileText className="h-6 w-6" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-medium text-gray-900">{assignment.title}</h4>
+                            <p className="text-sm text-gray-500">Posted {assignment.date}</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
 
@@ -302,7 +331,6 @@ export const Classroom = () => {
               <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
                 <h2 className="text-2xl font-bold text-purple-600 border-b border-purple-100 pb-4 mb-6 flex items-center justify-between">
                   Teachers
-                  <span className="text-sm font-normal text-gray-500 bg-gray-100 px-3 py-1 rounded-full">1</span>
                 </h2>
                 <div className="flex items-center gap-4 px-4 py-3 hover:bg-purple-50 rounded-xl transition-colors">
                   <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold shrink-0 text-lg border-2 border-purple-200">
@@ -315,7 +343,6 @@ export const Classroom = () => {
               <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
                 <h2 className="text-2xl font-bold text-purple-600 border-b border-purple-100 pb-4 mb-6 flex items-center justify-between">
                   Students
-                  <span className="text-sm font-normal text-gray-500 bg-gray-100 px-3 py-1 rounded-full">0</span>
                 </h2>
                 <div className="text-center py-12 text-gray-500">
                   <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />

@@ -12,6 +12,9 @@ import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { Dashboard } from './pages/Dashboard';
 import { Classroom } from './pages/Classroom';
+import { Settings } from './pages/Settings';
+import { Calendar } from './pages/Calendar';
+import { Users } from './pages/Users';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -45,8 +48,9 @@ export default function App() {
               <Route index element={<Dashboard />} />
               <Route path="classes" element={<Dashboard />} />
               <Route path="classes/:classId" element={<Classroom />} />
-              <Route path="calendar" element={<div className="p-8 text-center text-gray-500">Calendar coming soon</div>} />
-              <Route path="users" element={<div className="p-8 text-center text-gray-500">User management coming soon</div>} />
+              <Route path="calendar" element={<Calendar />} />
+              <Route path="users" element={<Users />} />
+              <Route path="settings" element={<Settings />} />
             </Route>
           </Routes>
         </Router>
