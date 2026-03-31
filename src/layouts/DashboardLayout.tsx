@@ -3,6 +3,7 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
 import { BookOpen, LogOut, Home, Users, Calendar, Settings, Bell, Menu } from 'lucide-react';
+import { SCHOOL_LOGO_URL, SCHOOL_NAME } from '../constants';
 
 export const DashboardLayout = () => {
   const { profile, signOut } = useAuth();
@@ -31,8 +32,8 @@ export const DashboardLayout = () => {
       {/* Mobile Header */}
       <div className="md:hidden bg-white border-b p-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjYvYmFkZ2UuanBn" alt="HFO SHS Logo" className="h-8 w-auto object-contain" referrerPolicy="no-referrer" />
-          <span className="font-bold text-gray-900">SHS Portal</span>
+          <img src={SCHOOL_LOGO_URL} alt={`${SCHOOL_NAME} Logo`} className="h-8 w-auto object-contain" referrerPolicy="no-referrer" />
+          <span className="font-bold text-gray-900">{SCHOOL_NAME} Portal</span>
         </div>
         <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
           <Menu className="h-6 w-6" />
@@ -46,8 +47,8 @@ export const DashboardLayout = () => {
       `}>
         <div className="h-full flex flex-col">
           <div className="h-16 hidden md:flex items-center gap-3 px-6 border-b">
-            <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjYvYmFkZ2UuanBn" alt="HFO SHS Logo" className="h-8 w-auto object-contain" referrerPolicy="no-referrer" />
-            <span className="text-xl font-bold text-gray-900">SHS Portal</span>
+            <img src={SCHOOL_LOGO_URL} alt={`${SCHOOL_NAME} Logo`} className="h-8 w-auto object-contain" referrerPolicy="no-referrer" />
+            <span className="text-xl font-bold text-gray-900">{SCHOOL_NAME} Portal</span>
           </div>
 
           <div className="flex-1 overflow-y-auto py-4">

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Button } from '../components/ui/button';
 import { BookOpen, Users, Calendar, Award, ArrowRight, CheckCircle2, Mail, Phone, MapPin } from 'lucide-react';
+import { SCHOOL_LOGO_URL, YPKB_LOGO_URL, SCHOOL_NAME, SCHOOL_FULL_NAME } from '../constants';
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -40,7 +41,7 @@ export const LandingPage = () => {
               Your High School Journey, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">Elevated.</span>
             </motion.h1>
             <motion.p variants={fadeIn} className="text-xl text-gray-800 mb-10 leading-relaxed font-medium">
-              The official digital learning platform for Holy Faithful Obedient Senior High School. Connect with teachers, collaborate with classmates, and excel in your studies.
+              The official digital learning platform for {SCHOOL_FULL_NAME}. Connect with teachers, collaborate with classmates, and excel in your studies.
             </motion.p>
             <motion.div variants={fadeIn} className="flex justify-center gap-4">
               <Link to="/login">
@@ -125,16 +126,16 @@ export const LandingPage = () => {
             transition={{ duration: 0.5 }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">About HFO SHS & YPKB</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">About {SCHOOL_NAME} & YPKB</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12">
-              Holy Faithful Obedient Senior High School is proudly supported by Yayasan Pokok Kegirangan Bangsa (YPKB), dedicated to providing excellent education and character building.
+              {SCHOOL_FULL_NAME} is proudly supported by Yayasan Pokok Kegirangan Bangsa (YPKB), dedicated to providing excellent education and character building.
             </p>
             <div className="flex flex-col md:flex-row justify-center items-center gap-12 mt-12">
               <motion.div whileHover={{ scale: 1.05 }} className="bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
-                <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjYvYmFkZ2UuanBn" alt="HFO SHS Logo" className="h-48 md:h-64 w-auto object-contain drop-shadow-xl" referrerPolicy="no-referrer" />
+                <img src={SCHOOL_LOGO_URL} alt={`${SCHOOL_NAME} Logo`} className="h-48 md:h-64 w-auto object-contain drop-shadow-xl" referrerPolicy="no-referrer" />
               </motion.div>
               <motion.div whileHover={{ scale: 1.05 }} className="bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
-                <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjcvZG93bmxvYWQuanBn" alt="YPKB Logo" className="h-48 md:h-64 w-auto object-contain drop-shadow-xl" referrerPolicy="no-referrer" />
+                <img src={YPKB_LOGO_URL} alt="YPKB Logo" className="h-48 md:h-64 w-auto object-contain drop-shadow-xl" referrerPolicy="no-referrer" />
               </motion.div>
             </div>
           </motion.div>
