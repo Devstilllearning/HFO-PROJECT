@@ -12,6 +12,7 @@ import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { Dashboard } from './pages/Dashboard';
 import { Classroom } from './pages/Classroom';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -29,25 +30,27 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route element={<LandingLayout />}>
-            <Route path="/" element={<LandingPage />} />
-          </Route>
-          <Route path="/login" element={<LoginPage />} />
-          
-          {/* Protected Routes */}
-          <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
-            <Route index element={<Dashboard />} />
-            <Route path="classes" element={<Dashboard />} />
-            <Route path="classes/:classId" element={<Classroom />} />
-            <Route path="calendar" element={<div className="p-8 text-center text-gray-500">Calendar coming soon</div>} />
-            <Route path="users" element={<div className="p-8 text-center text-gray-500">User management coming soon</div>} />
-          </Route>
-        </Routes>
-      </Router>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            {/* Public Routes */}
+            <Route element={<LandingLayout />}>
+              <Route path="/" element={<LandingPage />} />
+            </Route>
+            <Route path="/login" element={<LoginPage />} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+              <Route index element={<Dashboard />} />
+              <Route path="classes" element={<Dashboard />} />
+              <Route path="classes/:classId" element={<Classroom />} />
+              <Route path="calendar" element={<div className="p-8 text-center text-gray-500">Calendar coming soon</div>} />
+              <Route path="users" element={<div className="p-8 text-center text-gray-500">User management coming soon</div>} />
+            </Route>
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
