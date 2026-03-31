@@ -1,0 +1,197 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    function isTeacher() {
+      return isAuthenticated() && getUserRole() == 'teacher';
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && (getUserRole() == 'admin' || (request.auth.token.email == "nataliariyadi37@gmail.com" && request.auth.token.email_verified == true));
+    }
+    
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+    
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+    
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid;
+    }
+    
+    function uidNotModified() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid;
+    }
+
+    // Domain Validators
+    function isValidUser(data) {
+      return hasOnlyAllowedFields(['uid', 'name', 'email', 'role', 'avatarUrl', 'createdAt']) &&
+             data.uid is string && data.uid.size() > 0 && data.uid.size() < 100 &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.email is string && isValidEmail(data.email) &&
+             data.role in ['student', 'teacher', 'admin'] &&
+             (!('avatarUrl' in data) || (data.avatarUrl is string && data.avatarUrl.size() < 1000)) &&
+             data.createdAt is timestamp;
+    }
+    
+    function isValidClass(data) {
+      return hasOnlyAllowedFields(['id', 'name', 'subject', 'teacherId', 'teacherName', 'description', 'enrollCode', 'createdAt']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() < 100 &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.subject is string && data.subject.size() > 0 && data.subject.size() < 100 &&
+             data.teacherId is string && data.teacherId.size() > 0 && data.teacherId.size() < 100 &&
+             data.teacherName is string && data.teacherName.size() > 0 && data.teacherName.size() < 100 &&
+             (!('description' in data) || (data.description is string && data.description.size() < 1000)) &&
+             data.enrollCode is string && data.enrollCode.size() > 0 && data.enrollCode.size() < 20 &&
+             data.createdAt is timestamp;
+    }
+    
+    function isValidEnrollment(data) {
+      return hasOnlyAllowedFields(['classId', 'studentId', 'studentName', 'joinedAt']) &&
+             data.classId is string && data.classId.size() > 0 && data.classId.size() < 100 &&
+             data.studentId is string && data.studentId.size() > 0 && data.studentId.size() < 100 &&
+             data.studentName is string && data.studentName.size() > 0 && data.studentName.size() < 100 &&
+             data.joinedAt is timestamp;
+    }
+    
+    function isValidAssignment(data) {
+      return hasOnlyAllowedFields(['id', 'classId', 'title', 'description', 'dueDate', 'teacherId', 'createdAt']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() < 100 &&
+             data.classId is string && data.classId.size() > 0 && data.classId.size() < 100 &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             (!('description' in data) || (data.description is string && data.description.size() < 5000)) &&
+             (!('dueDate' in data) || data.dueDate is timestamp) &&
+             data.teacherId is string && data.teacherId.size() > 0 && data.teacherId.size() < 100 &&
+             data.createdAt is timestamp;
+    }
+    
+    function isValidSubmission(data) {
+      return hasOnlyAllowedFields(['id', 'assignmentId', 'studentId', 'studentName', 'classId', 'content', 'status', 'grade', 'submittedAt']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() < 100 &&
+             data.assignmentId is string && data.assignmentId.size() > 0 && data.assignmentId.size() < 100 &&
+             data.studentId is string && data.studentId.size() > 0 && data.studentId.size() < 100 &&
+             data.studentName is string && data.studentName.size() > 0 && data.studentName.size() < 100 &&
+             data.classId is string && data.classId.size() > 0 && data.classId.size() < 100 &&
+             data.content is string && data.content.size() < 5000 &&
+             data.status in ['submitted', 'graded', 'missing'] &&
+             (!('grade' in data) || (data.grade is number && data.grade >= 0 && data.grade <= 100)) &&
+             data.submittedAt is timestamp;
+    }
+    
+    function isValidMaterial(data) {
+      return hasOnlyAllowedFields(['id', 'classId', 'title', 'description', 'fileUrl', 'teacherId', 'createdAt']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() < 100 &&
+             data.classId is string && data.classId.size() > 0 && data.classId.size() < 100 &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             (!('description' in data) || (data.description is string && data.description.size() < 5000)) &&
+             (!('fileUrl' in data) || (data.fileUrl is string && data.fileUrl.size() < 1000)) &&
+             data.teacherId is string && data.teacherId.size() > 0 && data.teacherId.size() < 100 &&
+             data.createdAt is timestamp;
+    }
+    
+    function isValidAnnouncement(data) {
+      return hasOnlyAllowedFields(['id', 'classId', 'content', 'authorId', 'authorName', 'createdAt']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() < 100 &&
+             data.classId is string && data.classId.size() > 0 && data.classId.size() < 100 &&
+             data.content is string && data.content.size() > 0 && data.content.size() < 5000 &&
+             data.authorId is string && data.authorId.size() > 0 && data.authorId.size() < 100 &&
+             data.authorName is string && data.authorName.size() > 0 && data.authorName.size() < 100 &&
+             data.createdAt is timestamp;
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if isAuthenticated(); // Needed for showing names/avatars in classes
+      allow create: if isAuthenticated() && isValidUser(request.resource.data) && 
+                    ((isOwner(userId) && request.resource.data.role == 'student') || isAdmin());
+      allow update: if isAuthenticated() && isValidUser(request.resource.data) && uidNotModified() &&
+                    ((isOwner(userId) && request.resource.data.role == resource.data.role) || isAdmin());
+      allow delete: if isAdmin();
+    }
+    
+    // Classes Collection
+    match /classes/{classId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidClass(request.resource.data) && 
+                    (isTeacher() || isAdmin()) && request.resource.data.teacherId == request.auth.uid;
+      allow update: if isAuthenticated() && isValidClass(request.resource.data) && 
+                    ((isTeacher() && resource.data.teacherId == request.auth.uid) || isAdmin());
+      allow delete: if isAuthenticated() && ((isTeacher() && resource.data.teacherId == request.auth.uid) || isAdmin());
+    }
+    
+    // Enrollments Collection
+    match /enrollments/{enrollmentId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidEnrollment(request.resource.data) && 
+                    request.resource.data.studentId == request.auth.uid;
+      allow update: if isAdmin(); // Students shouldn't update enrollment, only delete (unenroll)
+      allow delete: if isAuthenticated() && (resource.data.studentId == request.auth.uid || isAdmin() || 
+                    (isTeacher() && get(/databases/$(database)/documents/classes/$(resource.data.classId)).data.teacherId == request.auth.uid));
+    }
+    
+    // Assignments Collection
+    match /assignments/{assignmentId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidAssignment(request.resource.data) && 
+                    (isTeacher() || isAdmin()) && request.resource.data.teacherId == request.auth.uid;
+      allow update: if isAuthenticated() && isValidAssignment(request.resource.data) && 
+                    ((isTeacher() && resource.data.teacherId == request.auth.uid) || isAdmin());
+      allow delete: if isAuthenticated() && ((isTeacher() && resource.data.teacherId == request.auth.uid) || isAdmin());
+    }
+    
+    // Submissions Collection
+    match /submissions/{submissionId} {
+      allow read: if isAuthenticated() && (resource.data.studentId == request.auth.uid || isAdmin() || 
+                  (isTeacher() && get(/databases/$(database)/documents/classes/$(resource.data.classId)).data.teacherId == request.auth.uid));
+      allow create: if isAuthenticated() && isValidSubmission(request.resource.data) && 
+                    request.resource.data.studentId == request.auth.uid;
+      allow update: if isAuthenticated() && isValidSubmission(request.resource.data) && 
+                    (
+                      (resource.data.studentId == request.auth.uid && request.resource.data.grade == resource.data.grade) || 
+                      (isTeacher() && get(/databases/$(database)/documents/classes/$(resource.data.classId)).data.teacherId == request.auth.uid) || 
+                      isAdmin()
+                    );
+      allow delete: if isAuthenticated() && (resource.data.studentId == request.auth.uid || isAdmin());
+    }
+    
+    // Materials Collection
+    match /materials/{materialId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidMaterial(request.resource.data) && 
+                    (isTeacher() || isAdmin()) && request.resource.data.teacherId == request.auth.uid;
+      allow update: if isAuthenticated() && isValidMaterial(request.resource.data) && 
+                    ((isTeacher() && resource.data.teacherId == request.auth.uid) || isAdmin());
+      allow delete: if isAuthenticated() && ((isTeacher() && resource.data.teacherId == request.auth.uid) || isAdmin());
+    }
+    
+    // Announcements Collection
+    match /announcements/{announcementId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidAnnouncement(request.resource.data) && 
+                    request.resource.data.authorId == request.auth.uid;
+      allow update: if isAuthenticated() && isValidAnnouncement(request.resource.data) && 
+                    (resource.data.authorId == request.auth.uid || isAdmin());
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin() || 
+                    (isTeacher() && get(/databases/$(database)/documents/classes/$(resource.data.classId)).data.teacherId == request.auth.uid));
+    }
+  }
+}

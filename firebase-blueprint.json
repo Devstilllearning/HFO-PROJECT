@@ -1,0 +1,137 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the HFO platform (student, teacher, or admin)",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["student", "teacher", "admin"] },
+        "avatarUrl": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["uid", "name", "email", "role", "createdAt"]
+    },
+    "Class": {
+      "title": "Class",
+      "description": "A classroom managed by a teacher",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "subject": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "teacherName": { "type": "string" },
+        "description": { "type": "string" },
+        "enrollCode": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["id", "name", "subject", "teacherId", "teacherName", "enrollCode", "createdAt"]
+    },
+    "Enrollment": {
+      "title": "Enrollment",
+      "description": "A student's enrollment in a class",
+      "type": "object",
+      "properties": {
+        "classId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "joinedAt": { "type": "timestamp" }
+      },
+      "required": ["classId", "studentId", "studentName", "joinedAt"]
+    },
+    "Assignment": {
+      "title": "Assignment",
+      "description": "An assignment created by a teacher",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "classId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "dueDate": { "type": "timestamp" },
+        "teacherId": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["id", "classId", "title", "teacherId", "createdAt"]
+    },
+    "Submission": {
+      "title": "Submission",
+      "description": "A student's submission for an assignment",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "assignmentId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "classId": { "type": "string" },
+        "content": { "type": "string" },
+        "status": { "type": "string", "enum": ["submitted", "graded", "missing"] },
+        "grade": { "type": "number" },
+        "submittedAt": { "type": "timestamp" }
+      },
+      "required": ["id", "assignmentId", "studentId", "studentName", "classId", "content", "status", "submittedAt"]
+    },
+    "Material": {
+      "title": "Material",
+      "description": "A learning material uploaded by a teacher",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "classId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["id", "classId", "title", "teacherId", "createdAt"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "An announcement posted in a class",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "classId": { "type": "string" },
+        "content": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["id", "classId", "content", "authorId", "authorName", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles"
+    },
+    "/classes/{classId}": {
+      "schema": { "$ref": "#/entities/Class" },
+      "description": "Classes"
+    },
+    "/enrollments/{enrollmentId}": {
+      "schema": { "$ref": "#/entities/Enrollment" },
+      "description": "Student enrollments in classes"
+    },
+    "/assignments/{assignmentId}": {
+      "schema": { "$ref": "#/entities/Assignment" },
+      "description": "Assignments for classes"
+    },
+    "/submissions/{submissionId}": {
+      "schema": { "$ref": "#/entities/Submission" },
+      "description": "Student submissions for assignments"
+    },
+    "/materials/{materialId}": {
+      "schema": { "$ref": "#/entities/Material" },
+      "description": "Learning materials for classes"
+    },
+    "/announcements/{announcementId}": {
+      "schema": { "$ref": "#/entities/Announcement" },
+      "description": "Announcements for classes"
+    }
+  }
+}
