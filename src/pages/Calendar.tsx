@@ -1,15 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Calendar as CalendarIcon, Clock, BookOpen } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from 'date-fns';
 
 export const Calendar = () => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
+  const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
+
+  const monthStart = startOfMonth(currentDate);
+  const monthEnd = endOfMonth(currentDate);
+  const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
+
+  // Add some empty days for the start of the month to align correctly
+  const startDayOfWeek = monthStart.getDay();
+  const emptyDays = Array.from({ length: startDayOfWeek });
+
   // Mock upcoming events for demonstration
   const events = [
-    { id: 1, title: 'Midterm Mathematics Exam', date: 'Oct 15, 2026', time: '09:00 AM', type: 'Exam', color: 'bg-red-100 text-red-700' },
-    { id: 2, title: 'Physics Lab Report Due', date: 'Oct 18, 2026', time: '11:59 PM', type: 'Assignment', color: 'bg-orange-100 text-orange-700' },
-    { id: 3, title: 'School Assembly', date: 'Oct 20, 2026', time: '08:00 AM', type: 'Event', color: 'bg-blue-100 text-blue-700' },
-    { id: 4, title: 'History Essay Submission', date: 'Oct 25, 2026', time: '11:59 PM', type: 'Assignment', color: 'bg-purple-100 text-purple-700' },
+    { id: 1, title: 'Midterm Mathematics Exam', date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 15), time: '09:00 AM', type: 'Exam', color: 'bg-red-100 text-red-700' },
+    { id: 2, title: 'Physics Lab Report Due', date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 18), time: '11:59 PM', type: 'Assignment', color: 'bg-orange-100 text-orange-700' },
+    { id: 3, title: 'School Assembly', date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 20), time: '08:00 AM', type: 'Event', color: 'bg-blue-100 text-blue-700' },
+    { id: 4, title: 'History Essay Submission', date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 25), time: '11:59 PM', type: 'Assignment', color: 'bg-purple-100 text-purple-700' },
   ];
 
   return (
@@ -26,15 +40,19 @@ export const Calendar = () => {
       </div>
 
       <div className="grid md:grid-cols-3 gap-8">
-        {/* Main Calendar View (Mockup) */}
+        {/* Main Calendar View */}
         <div className="md:col-span-2 space-y-6">
           <Card className="border-gray-200 shadow-sm">
             <CardHeader className="border-b bg-gray-50/50">
               <div className="flex justify-between items-center">
-                <CardTitle className="text-xl font-bold text-gray-800">October 2026</CardTitle>
+                <CardTitle className="text-xl font-bold text-gray-800">{format(currentDate, 'MMMM yyyy')}</CardTitle>
                 <div className="flex gap-2">
-                  <button className="p-2 rounded-lg hover:bg-gray-100">&lt;</button>
-                  <button className="p-2 rounded-lg hover:bg-gray-100">&gt;</button>
+                  <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-gray-200 transition-colors">
+                    <ChevronLeft className="h-5 w-5 text-gray-600" />
+                  </button>
+                  <button onClick={nextMonth} className="p-2 rounded-lg hover:bg-gray-200 transition-colors">
+                    <ChevronRight className="h-5 w-5 text-gray-600" />
+                  </button>
                 </div>
               </div>
             </CardHeader>
@@ -45,30 +63,32 @@ export const Calendar = () => {
                 ))}
               </div>
               <div className="grid grid-cols-7 gap-2">
-                {/* Empty days for start of month */}
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={`empty-${i}`} className="h-24 rounded-xl bg-gray-50 border border-transparent opacity-50"></div>
+                {emptyDays.map((_, i) => (
+                  <div key={`empty-${i}`} className="h-24 rounded-xl bg-gray-50/50 border border-transparent opacity-50"></div>
                 ))}
-                {/* Days of the month */}
-                {Array.from({ length: 31 }).map((_, i) => {
-                  const day = i + 1;
-                  const hasEvent = [15, 18, 20, 25].includes(day);
+                {daysInMonth.map((day, i) => {
+                  const dayEvents = events.filter(e => isSameDay(e.date, day));
+                  const isCurrentDay = isToday(day);
+                  
                   return (
-                    <div 
-                      key={day} 
-                      className={`h-24 rounded-xl border p-2 flex flex-col transition-all ${
-                        day === new Date().getDate() ? 'border-purple-500 bg-purple-50' : 'border-gray-100 hover:border-purple-200'
+                    <motion.div 
+                      key={day.toISOString()} 
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: i * 0.01 }}
+                      className={`h-24 rounded-xl border p-2 flex flex-col transition-all cursor-pointer ${
+                        isCurrentDay ? 'border-purple-500 bg-purple-50 shadow-sm' : 'border-gray-100 hover:border-purple-300 hover:shadow-md'
                       }`}
                     >
-                      <span className={`text-sm font-medium ${day === new Date().getDate() ? 'text-purple-700' : 'text-gray-700'}`}>
-                        {day}
+                      <span className={`text-sm font-medium ${isCurrentDay ? 'text-purple-700' : 'text-gray-700'}`}>
+                        {format(day, 'd')}
                       </span>
-                      {hasEvent && (
-                        <div className="mt-auto">
-                          <div className="h-1.5 w-1.5 rounded-full bg-purple-500 mx-auto"></div>
-                        </div>
-                      )}
-                    </div>
+                      <div className="mt-auto flex flex-col gap-1">
+                        {dayEvents.map(event => (
+                          <div key={event.id} className={`h-1.5 w-full rounded-full ${event.color.split(' ')[0]}`} title={event.title}></div>
+                        ))}
+                      </div>
+                    </motion.div>
                   );
                 })}
               </div>
@@ -82,11 +102,11 @@ export const Calendar = () => {
             <CardHeader className="border-b bg-gray-50/50">
               <CardTitle className="text-lg font-bold text-gray-800 flex items-center gap-2">
                 <CalendarIcon className="h-5 w-5 text-purple-600" />
-                Upcoming Events
+                Events in {format(currentDate, 'MMMM')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0 divide-y divide-gray-100">
-              {events.map((event, index) => (
+              {events.length > 0 ? events.map((event, index) => (
                 <motion.div 
                   key={event.id}
                   initial={{ opacity: 0, x: 20 }}
@@ -103,7 +123,7 @@ export const Calendar = () => {
                   <div className="flex items-center gap-4 text-sm text-gray-500">
                     <div className="flex items-center gap-1">
                       <CalendarIcon className="h-3.5 w-3.5" />
-                      {event.date}
+                      {format(event.date, 'MMM d, yyyy')}
                     </div>
                     <div className="flex items-center gap-1">
                       <Clock className="h-3.5 w-3.5" />
@@ -111,10 +131,11 @@ export const Calendar = () => {
                     </div>
                   </div>
                 </motion.div>
-              ))}
-              <div className="p-4 text-center">
-                <button className="text-sm font-medium text-purple-600 hover:underline">View All Events</button>
-              </div>
+              )) : (
+                <div className="p-8 text-center text-gray-500">
+                  No events this month.
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

@@ -23,11 +23,11 @@ export const LandingPage = () => {
     <div className="flex flex-col min-h-screen overflow-hidden">
       {/* Hero Section */}
       <section className="relative bg-white pt-16 pb-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 -skew-y-6 transform origin-top-left -z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 -skew-y-6 transform origin-top-left -z-10"></div>
         {/* Colorful decorative blobs */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
-        <div className="absolute top-20 right-1/4 w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute -bottom-32 left-1/2 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse"></div>
+        <div className="absolute top-20 right-1/4 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute -bottom-32 left-1/2 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse" style={{ animationDelay: '4s' }}></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div 
@@ -39,7 +39,7 @@ export const LandingPage = () => {
             <motion.h1 variants={fadeIn} className="text-5xl font-extrabold text-gray-900 tracking-tight sm:text-6xl mb-6">
               Your High School Journey, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">Elevated.</span>
             </motion.h1>
-            <motion.p variants={fadeIn} className="text-xl text-gray-600 mb-10 leading-relaxed">
+            <motion.p variants={fadeIn} className="text-xl text-gray-800 mb-10 leading-relaxed font-medium">
               The official digital learning platform for Holy Faithful Obedient Senior High School. Connect with teachers, collaborate with classmates, and excel in your studies.
             </motion.p>
             <motion.div variants={fadeIn} className="flex justify-center gap-4">
@@ -49,7 +49,7 @@ export const LandingPage = () => {
                 </Button>
               </Link>
               <a href="#features">
-                <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-full hover:bg-purple-50">
+                <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-full hover:bg-purple-50 bg-white/80 backdrop-blur-sm">
                   Learn More
                 </Button>
               </a>
@@ -115,63 +115,8 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="bg-gradient-to-br from-purple-700 to-purple-900 rounded-3xl overflow-hidden shadow-2xl"
-          >
-            <div className="grid md:grid-cols-2">
-              <div className="p-12 md:p-16 flex flex-col justify-center relative">
-                <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
-                  <div className="absolute -top-24 -left-24 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-                </div>
-                <Award className="h-12 w-12 text-purple-300 mb-8 relative z-10" />
-                <h2 className="text-3xl font-bold text-white mb-6 relative z-10 leading-tight">
-                  "HFO's platform has completely transformed how our high school operates. It's intuitive, fast, and keeps my students engaged."
-                </h2>
-                <div className="flex items-center gap-4 relative z-10">
-                  <div className="h-12 w-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-xl border-2 border-purple-400">
-                    SJ
-                  </div>
-                  <div>
-                    <p className="text-white font-semibold">Sarah Johnson</p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-black/20 p-12 md:p-16 flex flex-col justify-center backdrop-blur-sm">
-                <ul className="space-y-6">
-                  {[
-                    'Real-time grade tracking',
-                    'Instant assignment submissions',
-                    'Direct teacher feedback',
-                    'Mobile-friendly access',
-                  ].map((item, i) => (
-                    <motion.li 
-                      key={i} 
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.1, duration: 0.5 }}
-                      className="flex items-center gap-4 text-white text-lg"
-                    >
-                      <CheckCircle2 className="h-6 w-6 text-purple-300 flex-shrink-0" />
-                      {item}
-                    </motion.li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
       {/* About Section */}
-      <section id="about" className="py-24 bg-gray-50">
+      <section id="about" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -184,9 +129,13 @@ export const LandingPage = () => {
             <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12">
               Holy Faithful Obedient Senior High School is proudly supported by Yayasan Pokok Kegirangan Bangsa (YPKB), dedicated to providing excellent education and character building.
             </p>
-            <div className="flex flex-col md:flex-row justify-center items-center gap-12">
-              <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjYvYmFkZ2UuanBn" alt="HFO SHS Logo" className="h-48 w-auto object-contain drop-shadow-xl" referrerPolicy="no-referrer" />
-              <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjcvZG93bmxvYWQuanBn" alt="YPKB Logo" className="h-48 w-auto object-contain drop-shadow-xl" referrerPolicy="no-referrer" />
+            <div className="flex flex-col md:flex-row justify-center items-center gap-12 mt-12">
+              <motion.div whileHover={{ scale: 1.05 }} className="bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
+                <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjYvYmFkZ2UuanBn" alt="HFO SHS Logo" className="h-48 md:h-64 w-auto object-contain drop-shadow-xl" referrerPolicy="no-referrer" />
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} className="bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
+                <img src="https://storage.googleapis.com/mms-attachments-prod/bW1zLWF0dGFjaG1lbnQvYzM3Y2YwOWUtYjA0Mi00MThjLWE3ZmEtYmQ2Nzg1N2YyNDM4LzE3NDM0ODk2MTQ2MjcvZG93bmxvYWQuanBn" alt="YPKB Logo" className="h-48 md:h-64 w-auto object-contain drop-shadow-xl" referrerPolicy="no-referrer" />
+              </motion.div>
             </div>
           </motion.div>
         </div>

@@ -5,8 +5,9 @@ import { db } from '../firebase';
 import { doc, getDoc, collection, query, where, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { BookOpen, Users, FileText, MessageSquare, Plus, ArrowLeft, Send } from 'lucide-react';
+import { BookOpen, Users, FileText, MessageSquare, Plus, ArrowLeft, Send, Upload } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '../components/ui/dialog';
 
 export const Classroom = () => {
   const { classId } = useParams<{ classId: string }>();
@@ -16,12 +17,26 @@ export const Classroom = () => {
   const [loading, setLoading] = useState(true);
   
   // Announcements State
-  const [assignments, setAssignments] = useState<any[]>([]);
+  const [assignments, setAssignments] = useState<any[]>([
+    { id: 1, title: 'Chapter 1 Review', date: new Date().toLocaleDateString(), submitted: false }
+  ]);
 
   const handleCreateAssignment = () => {
     const title = prompt("Enter assignment title:");
     if (title) {
-      setAssignments([{ id: Date.now(), title, date: new Date().toLocaleDateString() }, ...assignments]);
+      setAssignments([{ id: Date.now(), title, date: new Date().toLocaleDateString(), submitted: false }, ...assignments]);
+    }
+  };
+
+  const [submittingAssignment, setSubmittingAssignment] = useState<number | null>(null);
+  const [submissionText, setSubmissionText] = useState('');
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+
+  const handleSubmitWork = () => {
+    if (submittingAssignment !== null) {
+      setAssignments(assignments.map(a => a.id === submittingAssignment ? { ...a, submitted: true } : a));
+      setSubmittingAssignment(null);
+      setSubmissionText('');
     }
   };
   const [newAnnouncement, setNewAnnouncement] = useState('');
@@ -310,12 +325,60 @@ export const Classroom = () => {
                             <h4 className="font-medium text-gray-900">{assignment.title}</h4>
                             <p className="text-sm text-gray-500">Posted {assignment.date}</p>
                           </div>
+                          {!isTeacher && (
+                            <Button 
+                              variant={assignment.submitted ? "secondary" : "default"}
+                              size="sm"
+                              onClick={() => !assignment.submitted && setSubmittingAssignment(assignment.id)}
+                              disabled={assignment.submitted}
+                              className={assignment.submitted ? "bg-green-100 text-green-700 hover:bg-green-100" : ""}
+                            >
+                              {assignment.submitted ? "Submitted" : "Submit Work"}
+                            </Button>
+                          )}
                         </CardContent>
                       </Card>
                     </motion.div>
                   ))}
                 </div>
               )}
+
+              {/* Submit Work Dialog */}
+              <Dialog open={submittingAssignment !== null} onOpenChange={(open) => !open && setSubmittingAssignment(null)}>
+                <DialogContent className="bg-white">
+                  <DialogHeader>
+                    <DialogTitle>Submit Assignment</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <p className="text-sm text-gray-500">
+                      Upload your work or type your answer below.
+                    </p>
+                    <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer">
+                      <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-sm font-medium text-gray-700">Click to upload files</p>
+                      <p className="text-xs text-gray-500 mt-1">PDF, DOCX, or images up to 10MB</p>
+                    </div>
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-gray-200" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-white px-2 text-gray-500">Or</span>
+                      </div>
+                    </div>
+                    <textarea 
+                      placeholder="Type your answer here..." 
+                      className="w-full min-h-[120px] p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent resize-y outline-none"
+                      value={submissionText}
+                      onChange={(e) => setSubmissionText(e.target.value)}
+                    />
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setSubmittingAssignment(null)}>Cancel</Button>
+                    <Button onClick={handleSubmitWork}>Turn In</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </motion.div>
           )}
 
