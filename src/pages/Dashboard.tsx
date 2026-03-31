@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, onSnapshot, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent } from '../components/ui/card';
 import { BookOpen, Users, Clock, Plus, ArrowRight } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Link } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { motion } from 'motion/react';
 
 export const Dashboard = () => {
   const { profile } = useAuth();
@@ -151,18 +152,38 @@ export const Dashboard = () => {
     return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div></div>;
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+  };
+
   return (
-    <div className="space-y-8">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-8"
+    >
       {/* Welcome Section */}
-      <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome back, {profile?.name}!</h2>
-          <p className="text-gray-600">Here's what's happening in your classes today.</p>
+      <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-8 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-y-1/2 translate-x-1/3 blur-2xl"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full translate-y-1/2 -translate-x-1/4 blur-2xl"></div>
+        <div className="relative z-10">
+          <h2 className="text-3xl font-bold mb-2">Welcome back, {profile?.name}!</h2>
+          <p className="text-purple-100 text-lg">Ready for another great day at Holy Faithful Obedient Senior High?</p>
         </div>
         {profile?.role === 'teacher' && (
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
-              <Button className="shrink-0">
+              <Button variant="secondary" className="shrink-0 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 bg-white text-purple-700 hover:bg-gray-50 relative z-10">
                 <Plus className="h-5 w-5 mr-2" />
                 Create Class
               </Button>
@@ -203,7 +224,7 @@ export const Dashboard = () => {
         {profile?.role === 'student' && (
           <Dialog open={isJoinOpen} onOpenChange={setIsJoinOpen}>
             <DialogTrigger asChild>
-              <Button className="shrink-0">
+              <Button variant="secondary" className="shrink-0 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 bg-white text-purple-700 hover:bg-gray-50 relative z-10">
                 <Plus className="h-5 w-5 mr-2" />
                 Join Class
               </Button>
@@ -237,39 +258,45 @@ export const Dashboard = () => {
 
       {/* Stats/Quick Links */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-purple-50 border-purple-100">
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="bg-purple-600 p-3 rounded-xl text-white">
-              <BookOpen className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-purple-600 mb-1">Enrolled Classes</p>
-              <h3 className="text-2xl font-bold text-gray-900">{classes.length}</h3>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-green-50 border-green-100">
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="bg-green-600 p-3 rounded-xl text-white">
-              <Clock className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-green-600 mb-1">Upcoming Tasks</p>
-              <h3 className="text-2xl font-bold text-gray-900">3</h3>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-orange-50 border-orange-100">
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="bg-orange-600 p-3 rounded-xl text-white">
-              <Users className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-orange-600 mb-1">New Announcements</p>
-              <h3 className="text-2xl font-bold text-gray-900">5</h3>
-            </div>
-          </CardContent>
-        </Card>
+        <Link to="/dashboard/classes">
+          <Card className="bg-purple-50 border-purple-100 hover:shadow-md transition-all cursor-pointer h-full">
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="bg-purple-600 p-3 rounded-xl text-white">
+                <BookOpen className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-purple-600 mb-1">Enrolled Classes</p>
+                <p className="text-sm text-gray-600">View all {classes.length} classes</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link to="/dashboard/calendar">
+          <Card className="bg-green-50 border-green-100 hover:shadow-md transition-all cursor-pointer h-full">
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="bg-green-600 p-3 rounded-xl text-white">
+                <Clock className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-green-600 mb-1">Upcoming Tasks</p>
+                <p className="text-sm text-gray-600">Check your calendar</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link to="/dashboard/classes">
+          <Card className="bg-orange-50 border-orange-100 hover:shadow-md transition-all cursor-pointer h-full">
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="bg-orange-600 p-3 rounded-xl text-white">
+                <Users className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-orange-600 mb-1">Class Stream</p>
+                <p className="text-sm text-gray-600">Catch up on announcements</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       {/* Class List */}
@@ -282,7 +309,11 @@ export const Dashboard = () => {
         </div>
         
         {classes.length === 0 ? (
-          <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm"
+          >
             <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <BookOpen className="h-8 w-8 text-gray-400" />
             </div>
@@ -293,40 +324,48 @@ export const Dashboard = () => {
                 : "You haven't joined any classes yet. Use a class code to join."}
             </p>
             {profile?.role === 'teacher' && (
-              <Button variant="outline" onClick={() => setIsCreateOpen(true)}>Create Class</Button>
+              <Button variant="outline" onClick={() => setIsCreateOpen(true)} className="rounded-full">Create Class</Button>
             )}
             {profile?.role === 'student' && (
-              <Button variant="outline" onClick={() => setIsJoinOpen(true)}>Join Class</Button>
+              <Button variant="outline" onClick={() => setIsJoinOpen(true)} className="rounded-full">Join Class</Button>
             )}
-          </div>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             {classes.map((c) => (
-              <Link key={c.id} to={`/dashboard/classes/${c.id}`}>
-                <Card className="h-full hover:shadow-md transition-shadow cursor-pointer border-gray-200 overflow-hidden group">
-                  <div className="h-32 bg-gradient-to-r from-purple-700 to-purple-500 p-6 flex flex-col justify-end relative">
-                    <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium text-white">
-                      {c.subject}
+              <motion.div key={c.id} variants={itemVariants}>
+                <Link to={`/dashboard/classes/${c.id}`}>
+                  <Card className="h-full hover:shadow-xl transition-all duration-300 cursor-pointer border-gray-200 overflow-hidden group hover:-translate-y-1">
+                    <div className="h-32 bg-gradient-to-br from-purple-800 to-purple-500 p-6 flex flex-col justify-end relative overflow-hidden">
+                      <div className="absolute -top-10 -right-10 w-32 h-32 bg-white opacity-10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                      <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium text-white shadow-sm">
+                        {c.subject}
+                      </div>
+                      <h4 className="text-xl font-bold text-white truncate group-hover:underline relative z-10">{c.name}</h4>
+                      <p className="text-purple-100 text-sm truncate relative z-10">{c.teacherName}</p>
                     </div>
-                    <h4 className="text-xl font-bold text-white truncate group-hover:underline">{c.name}</h4>
-                    <p className="text-purple-100 text-sm truncate">{c.teacherName}</p>
-                  </div>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <span className="flex items-center gap-1.5">
-                        <Users className="h-4 w-4" /> 24 Students
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <Clock className="h-4 w-4" /> 2 Due soon
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <span className="flex items-center gap-1.5">
+                          <Users className="h-4 w-4" /> Active Class
+                        </span>
+                        <span className="flex items-center gap-1.5 font-medium text-purple-600">
+                          Enter <ArrowRight className="h-4 w-4" />
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };

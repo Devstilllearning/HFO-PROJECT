@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
-import { doc, getDoc, collection, query, where, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { BookOpen, Users, FileText, MessageSquare, Plus, ArrowLeft } from 'lucide-react';
+import { BookOpen, Users, FileText, MessageSquare, Plus, ArrowLeft, Send } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export const Classroom = () => {
   const { classId } = useParams<{ classId: string }>();
@@ -13,6 +14,12 @@ export const Classroom = () => {
   const [classData, setClassData] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('stream');
   const [loading, setLoading] = useState(true);
+  
+  // Announcements State
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [newAnnouncement, setNewAnnouncement] = useState('');
+  const [isPosting, setIsPosting] = useState(false);
+  const [showPostBox, setShowPostBox] = useState(false);
 
   useEffect(() => {
     if (!classId) return;
@@ -34,6 +41,45 @@ export const Classroom = () => {
     fetchClass();
   }, [classId]);
 
+  useEffect(() => {
+    if (!classId) return;
+    
+    // Fetch announcements (client-side sort to avoid requiring composite index)
+    const q = query(collection(db, 'announcements'), where('classId', '==', classId));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      data.sort((a: any, b: any) => {
+        const timeA = a.createdAt?.toMillis() || 0;
+        const timeB = b.createdAt?.toMillis() || 0;
+        return timeB - timeA;
+      });
+      setAnnouncements(data);
+    });
+
+    return () => unsubscribe();
+  }, [classId]);
+
+  const handlePostAnnouncement = async () => {
+    if (!newAnnouncement.trim() || !profile || !classId) return;
+    setIsPosting(true);
+    try {
+      await addDoc(collection(db, 'announcements'), {
+        classId,
+        content: newAnnouncement,
+        authorId: profile.uid,
+        authorName: profile.name,
+        authorAvatar: profile.avatarUrl || '',
+        createdAt: serverTimestamp()
+      });
+      setNewAnnouncement('');
+      setShowPostBox(false);
+    } catch (error) {
+      console.error("Error posting announcement:", error);
+    } finally {
+      setIsPosting(false);
+    }
+  };
+
   if (loading) {
     return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div></div>;
   }
@@ -44,26 +90,40 @@ export const Classroom = () => {
 
   const isTeacher = profile?.role === 'teacher' && classData.teacherId === profile?.uid;
 
+  const tabContentVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+    exit: { opacity: 0, y: -10, transition: { duration: 0.2 } }
+  };
+
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="max-w-5xl mx-auto space-y-6"
+    >
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-800 to-purple-600 rounded-2xl p-8 text-white shadow-md relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-y-1/2 translate-x-1/3"></div>
-        <Link to="/dashboard" className="inline-flex items-center text-purple-100 hover:text-white mb-6 text-sm font-medium transition-colors">
+      <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-8 text-white shadow-lg relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-10 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl"></div>
+        <Link to="/dashboard" className="inline-flex items-center text-purple-100 hover:text-white mb-6 text-sm font-medium transition-colors relative z-10">
           <ArrowLeft className="h-4 w-4 mr-1" /> Back to Dashboard
         </Link>
-        <h1 className="text-4xl font-bold mb-2">{classData.name}</h1>
-        <p className="text-xl text-purple-100 mb-4">{classData.subject}</p>
-        <div className="flex items-center gap-4 text-sm text-purple-50">
-          <span className="bg-purple-900/50 px-3 py-1 rounded-full">{classData.teacherName}</span>
+        <h1 className="text-4xl font-bold mb-2 relative z-10">{classData.name}</h1>
+        <p className="text-xl text-purple-100 mb-6 relative z-10">{classData.subject}</p>
+        <div className="flex items-center gap-4 text-sm text-purple-50 relative z-10">
+          <span className="bg-purple-900/50 px-4 py-1.5 rounded-full backdrop-blur-sm border border-purple-500/30">
+            Teacher: {classData.teacherName}
+          </span>
           {isTeacher && (
-            <span className="bg-white/20 px-3 py-1 rounded-full font-mono">Code: {classData.enrollCode}</span>
+            <span className="bg-white/20 px-4 py-1.5 rounded-full font-mono backdrop-blur-sm border border-white/20">
+              Code: {classData.enrollCode}
+            </span>
           )}
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-gray-200 sticky top-0 bg-gray-50 z-20 pt-2">
         {[
           { id: 'stream', label: 'Stream', icon: MessageSquare },
           { id: 'classwork', label: 'Classwork', icon: BookOpen },
@@ -72,110 +132,201 @@ export const Classroom = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+            className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-all ${
               activeTab === tab.id
                 ? 'border-purple-600 text-purple-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            <tab.icon className="h-4 w-4" />
+            <tab.icon className={`h-4 w-4 ${activeTab === tab.id ? 'animate-pulse' : ''}`} />
             {tab.label}
           </button>
         ))}
       </div>
 
       {/* Content Area */}
-      <div className="py-6">
-        {activeTab === 'stream' && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="md:col-span-1 space-y-6">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-gray-500 uppercase tracking-wider">Upcoming</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-900 mb-4">No work due soon</p>
-                  <Link to="#" className="text-sm text-purple-600 hover:underline font-medium">View all</Link>
-                </CardContent>
-              </Card>
-            </div>
-            <div className="md:col-span-3 space-y-6">
-              {isTeacher && (
-                <Card className="hover:shadow-md transition-shadow cursor-pointer border-gray-200">
-                  <CardContent className="p-4 flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold shrink-0">
-                      {profile?.name?.charAt(0)}
-                    </div>
-                    <div className="text-gray-500 flex-1">Announce something to your class</div>
+      <div className="py-6 min-h-[400px]">
+        <AnimatePresence mode="wait">
+          {activeTab === 'stream' && (
+            <motion.div 
+              key="stream"
+              variants={tabContentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="grid grid-cols-1 md:grid-cols-4 gap-6"
+            >
+              <div className="md:col-span-1 space-y-6">
+                <Card className="border-gray-200 shadow-sm">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium text-gray-500 uppercase tracking-wider">Upcoming</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-900 mb-4">Woohoo, no work due soon!</p>
+                    <button onClick={() => setActiveTab('classwork')} className="text-sm text-purple-600 hover:underline font-medium">View all</button>
                   </CardContent>
                 </Card>
+              </div>
+              <div className="md:col-span-3 space-y-6">
+                {isTeacher && (
+                  <Card className="border-gray-200 shadow-sm overflow-hidden">
+                    {!showPostBox ? (
+                      <CardContent 
+                        className="p-4 flex items-center gap-4 cursor-text hover:bg-gray-50 transition-colors"
+                        onClick={() => setShowPostBox(true)}
+                      >
+                        <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold shrink-0">
+                          {profile?.name?.charAt(0)}
+                        </div>
+                        <div className="text-gray-500 flex-1">Announce something to your class...</div>
+                      </CardContent>
+                    ) : (
+                      <CardContent className="p-4 space-y-4">
+                        <textarea 
+                          className="w-full min-h-[100px] p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent resize-none outline-none"
+                          placeholder="Announce something to your class..."
+                          value={newAnnouncement}
+                          onChange={(e) => setNewAnnouncement(e.target.value)}
+                          autoFocus
+                        />
+                        <div className="flex justify-end gap-2">
+                          <Button variant="ghost" onClick={() => setShowPostBox(false)}>Cancel</Button>
+                          <Button 
+                            onClick={handlePostAnnouncement} 
+                            disabled={!newAnnouncement.trim() || isPosting}
+                            className="rounded-full"
+                          >
+                            <Send className="h-4 w-4 mr-2" />
+                            {isPosting ? 'Posting...' : 'Post'}
+                          </Button>
+                        </div>
+                      </CardContent>
+                    )}
+                  </Card>
+                )}
+                
+                {announcements.length === 0 ? (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm"
+                  >
+                    <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <MessageSquare className="h-8 w-8 text-gray-400" />
+                    </div>
+                    <h4 className="text-lg font-medium text-gray-900 mb-2">No announcements yet</h4>
+                    <p className="text-gray-500 max-w-sm mx-auto">
+                      This is where you'll see updates, announcements, and discussions for this class.
+                    </p>
+                  </motion.div>
+                ) : (
+                  <div className="space-y-4">
+                    {announcements.map((announcement, index) => (
+                      <motion.div 
+                        key={announcement.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                          <CardContent className="p-6">
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold shrink-0">
+                                {announcement.authorName?.charAt(0)}
+                              </div>
+                              <div>
+                                <p className="font-medium text-gray-900">{announcement.authorName}</p>
+                                <p className="text-xs text-gray-500">
+                                  {announcement.createdAt?.toDate().toLocaleDateString() || 'Just now'}
+                                </p>
+                              </div>
+                            </div>
+                            <p className="text-gray-800 whitespace-pre-wrap">{announcement.content}</p>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'classwork' && (
+            <motion.div 
+              key="classwork"
+              variants={tabContentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="space-y-6"
+            >
+              {isTeacher && (
+                <div className="flex justify-between items-center mb-6">
+                  <Button 
+                    onClick={() => {
+                      const title = prompt("Enter assignment title:");
+                      if (title) alert("Assignment created! (Demo mode)");
+                    }}
+                    className="rounded-full shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
+                  >
+                    <Plus className="h-5 w-5 mr-2" />
+                    Create Assignment
+                  </Button>
+                </div>
               )}
               
               <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
                 <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MessageSquare className="h-8 w-8 text-gray-400" />
+                  <FileText className="h-8 w-8 text-gray-400" />
                 </div>
-                <h4 className="text-lg font-medium text-gray-900 mb-2">No announcements yet</h4>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">No classwork yet</h4>
                 <p className="text-gray-500 max-w-sm mx-auto">
-                  This is where you'll see updates, announcements, and discussions for this class.
+                  {isTeacher 
+                    ? "Create assignments, questions, and materials for your students." 
+                    : "Your teacher hasn't assigned any classwork yet."}
                 </p>
               </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
 
-        {activeTab === 'classwork' && (
-          <div className="space-y-6">
-            {isTeacher && (
-              <div className="flex justify-between items-center mb-6">
-                <Button className="rounded-full shadow-md">
-                  <Plus className="h-5 w-5 mr-2" />
-                  Create
-                </Button>
-              </div>
-            )}
-            
-            <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
-              <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="h-8 w-8 text-gray-400" />
-              </div>
-              <h4 className="text-lg font-medium text-gray-900 mb-2">No classwork yet</h4>
-              <p className="text-gray-500 max-w-sm mx-auto">
-                {isTeacher 
-                  ? "Create assignments, questions, and materials for your students." 
-                  : "Your teacher hasn't assigned any classwork yet."}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'people' && (
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-purple-600 border-b border-purple-200 pb-4 mb-6 flex items-center justify-between">
-                Teachers
-                <span className="text-sm font-normal text-gray-500">1</span>
-              </h2>
-              <div className="flex items-center gap-4 px-4 py-3 hover:bg-gray-50 rounded-lg transition-colors">
-                <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold shrink-0">
-                  {classData.teacherName?.charAt(0)}
+          {activeTab === 'people' && (
+            <motion.div 
+              key="people"
+              variants={tabContentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="space-y-8"
+            >
+              <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+                <h2 className="text-2xl font-bold text-purple-600 border-b border-purple-100 pb-4 mb-6 flex items-center justify-between">
+                  Teachers
+                  <span className="text-sm font-normal text-gray-500 bg-gray-100 px-3 py-1 rounded-full">1</span>
+                </h2>
+                <div className="flex items-center gap-4 px-4 py-3 hover:bg-purple-50 rounded-xl transition-colors">
+                  <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold shrink-0 text-lg border-2 border-purple-200">
+                    {classData.teacherName?.charAt(0)}
+                  </div>
+                  <span className="font-medium text-gray-900 text-lg">{classData.teacherName}</span>
                 </div>
-                <span className="font-medium text-gray-900">{classData.teacherName}</span>
               </div>
-            </div>
-            
-            <div>
-              <h2 className="text-2xl font-bold text-purple-600 border-b border-purple-200 pb-4 mb-6 flex items-center justify-between">
-                Students
-                <span className="text-sm font-normal text-gray-500">0</span>
-              </h2>
-              <div className="text-center py-8 text-gray-500">
-                No students enrolled yet.
+              
+              <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+                <h2 className="text-2xl font-bold text-purple-600 border-b border-purple-100 pb-4 mb-6 flex items-center justify-between">
+                  Students
+                  <span className="text-sm font-normal text-gray-500 bg-gray-100 px-3 py-1 rounded-full">0</span>
+                </h2>
+                <div className="text-center py-12 text-gray-500">
+                  <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                  <p>No students enrolled yet.</p>
+                  {isTeacher && <p className="text-sm mt-2">Share the class code <b>{classData.enrollCode}</b> with your students.</p>}
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 };

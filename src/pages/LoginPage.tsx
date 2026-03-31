@@ -26,8 +26,12 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md shadow-xl border-0">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Colorful decorative blobs */}
+      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse" style={{ animationDelay: '2s' }}></div>
+      
+      <Card className="w-full max-w-md shadow-2xl border-0 relative z-10 bg-white/90 backdrop-blur-sm">
         <CardHeader className="space-y-1 text-center pb-8">
           <div className="flex justify-center mb-6">
             <div className="bg-purple-600 p-3 rounded-2xl shadow-lg shadow-purple-500/30">

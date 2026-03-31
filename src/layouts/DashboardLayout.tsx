@@ -33,7 +33,7 @@ export const DashboardLayout = () => {
           <div className="bg-purple-600 p-1.5 rounded-lg flex items-center justify-center">
             <BookOpen className="h-5 w-5 text-white" />
           </div>
-          <span className="font-bold text-gray-900">HFO Portal</span>
+          <span className="font-bold text-gray-900">SHS Portal</span>
         </div>
         <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
           <Menu className="h-6 w-6" />
@@ -50,7 +50,7 @@ export const DashboardLayout = () => {
             <div className="bg-purple-600 p-2 rounded-lg flex items-center justify-center">
               <BookOpen className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">HFO Portal</span>
+            <span className="text-xl font-bold text-gray-900">SHS Portal</span>
           </div>
 
           <div className="flex-1 overflow-y-auto py-4">
@@ -106,11 +106,11 @@ export const DashboardLayout = () => {
             {location.pathname.split('/').pop() || 'Dashboard'}
           </h1>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative" onClick={() => alert('No new notifications')}>
               <Bell className="h-5 w-5 text-gray-500" />
               <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={() => alert('Settings coming soon')}>
               <Settings className="h-5 w-5 text-gray-500" />
             </Button>
           </div>

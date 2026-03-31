@@ -13,7 +13,7 @@ export const LandingLayout = () => {
               {/* Fallback icon if user hasn't uploaded the logo yet */}
               <BookOpen className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">HFO Senior High</span>
+            <span className="text-xl font-bold text-gray-900">SHS</span>
           </Link>
           <nav className="hidden md:flex gap-6">
             <a href="#features" className="text-sm font-medium text-gray-600 hover:text-purple-600">Features</a>
@@ -40,7 +40,7 @@ export const LandingLayout = () => {
               <div className="bg-purple-600 p-1.5 rounded-lg flex items-center justify-center">
                 <BookOpen className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-bold">HFO Senior High</span>
+              <span className="text-lg font-bold">SHS</span>
             </div>
             <p className="text-gray-400 text-sm max-w-xs">
               Holy Faithful Obedient Senior High School. Empowering students with modern learning tools for academic excellence.
